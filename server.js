@@ -3,8 +3,9 @@ const app = express();
 const port = 3000;
 const mongoose = require('mongoose');
 const carModel = require('./carModel');
+const COMMON = require('./COMMON')
 
-const uri = 'mongodb+srv://giapdqph34273:ErPl3cD1TpWoj7aY@testmongodb.3f1oxwh.mongodb.net/giapdoquang'; // Đảm bảo thông tin chính xác
+const uri = COMMON.uri; // Đảm bảo thông tin chính xác
 
 // Kết nối MongoDB ở đây
 mongoose.connect(uri)
@@ -14,6 +15,10 @@ mongoose.connect(uri)
 // Middleware để parsing requests
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const apiMobile = require('./api')
+
+app.use('/api', apiMobile)
 
 // Route handler
 app.get('/', async (req, res) => {
@@ -31,15 +36,18 @@ app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 });
 
-app.get('/add_xe', async (req, res) => {
+app.post('/add_xe', async (req, res) => {
     await mongoose.connect(uri)
 
-    let car = {
-        ten: 'xe 30',
-        namSX: 2025,
-        hang: 'Yamama',
-        gia: 1000000
-    }
+    // let car = {
+    //     ten: 'xe 30',
+    //     namSX: 2025,
+    //     hang: 'Yamama',
+    //     gia: 1000000
+    // }
+
+    let car = req.body;
+
 
     let kq = await carModel.create(car)
     console.log(kq)
