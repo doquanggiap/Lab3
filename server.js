@@ -37,24 +37,20 @@ app.listen(port, () => {
 });
 
 app.post('/add_xe', async (req, res) => {
-    await mongoose.connect(uri)
+    try {
+        const car = req.body;
+        const newCar = await carModel.create(car);
+        console.log(newCar);
+        res.send(newCar);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Server error');
+    }
+});
 
-    // let car = {
-    //     ten: 'xe 30',
-    //     namSX: 2025,
-    //     hang: 'Yamama',
-    //     gia: 1000000
-    // }
-
-    let car = req.body;
 
 
-    let kq = await carModel.create(car)
-    console.log(kq)
-    res.send(kq)
-})
-
-app.get('/xoa/:id', async (req, res) => {
+app.delete('/xoa/:id', async (req, res) => {
 
     await mongoose.connect(uri)
 
@@ -65,28 +61,26 @@ app.get('/xoa/:id', async (req, res) => {
     try {
         await carModel.deleteOne({ _id: id })
 
-        res.redirect('../')
+        res.status(200).send('Car deleted successfully');
     } catch (error) {
         console.log(error);
         res.status(500).send('Server error');
     }
-})
+});
 
-app.get('/update/:id', async (req, res) => {
+app.put('/update/:id', async (req, res) => {
     await mongoose.connect(uri)
 
     let id = req.params.id
     console.log(id);
 
-    let tenXeMoi = 'Xe Moi năm 2024 heheh'
-
-
+    let updatedCar = req.body;
 
     try {
-        await carModel.updateOne({ _id: id }, { ten: tenXeMoi })
+        await carModel.updateOne({ _id: id }, updatedCar)
 
-        let xehois = await carModel.find({})
-        res.send(xehois)
+        let updatedCars = await carModel.find({})
+        res.send(updatedCars)
     } catch (error) {
         console.log(error);
         res.status(500).send('Server error');
